@@ -1,0 +1,143 @@
+import React, { useState, useContext } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Modal } from 'react-native';
+import { Button } from 'react-native-paper';
+import { MaterialIcons } from '@expo/vector-icons';
+import { AuthContext } from '../Context/AuthContext';
+import { useNavigation } from '@react-navigation/native';
+
+const HeaderLabel = () => {
+  const navigation = useNavigation();
+  const [viewSettings, setViewSettings] = useState(false);
+  const { state, logout, setUserMode } = useContext(AuthContext);
+  const { userData, userMode } = state;
+
+  const confirmLogout = () => {
+    logout();
+    setViewSettings(false); // Close settings modal after confirming logout
+  };
+
+  const modalVisible = () => {
+    setViewSettings(true);
+  };
+  const backButton = () => {
+    navigation.goBack();
+    setUserMode(null);
+  };
+
+  return (
+    <View style={styles.header}>
+      <View style={styles.container}>
+        <TouchableOpacity onPress={backButton} style={styles.settingsButton}>
+          <MaterialIcons name='arrow-circle-left' size={40} color='white' />
+        </TouchableOpacity>
+        <Text style={[styles.userName, { color: '#EAEAEA' }]}>{userMode}</Text>
+        <TouchableOpacity onPress={modalVisible} style={styles.settingsButton}>
+          <MaterialIcons name='account-circle' size={40} color='white' />
+        </TouchableOpacity>
+      </View>
+
+      {/* Settings Modal */}
+      <Modal
+        animationType='fade' // Change animation to fade
+        transparent={true}
+        visible={viewSettings}
+        onRequestClose={() => setViewSettings(false)}
+        onDismiss={() => setViewSettings(false)}
+      >
+        <View style={[styles.centeredView, styles.modalOverlay]}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Settings Modal</Text>
+            <Button
+              onPress={confirmLogout}
+              mode='contained'
+              style={styles.logoutButton}
+            >
+              Logout
+            </Button>
+            <Button
+              onPress={confirmLogout}
+              mode='contained'
+              style={styles.logoutButton}
+            >
+              Settings
+            </Button>
+            <Button
+              onPress={() => setViewSettings(false)}
+              mode='outlined'
+              style={styles.cancelButton}
+            >
+              Cancel
+            </Button>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  header: {
+    position: 'absolute', // or 'fixed' if you want it fixed to the viewport
+    top: 30, // Adjust as needed
+    left: 0, // Adjust as needed
+    right: 0, // Adjust as needed
+    zIndex: 1000, // Adjust the zIndex to ensure it appears above other content
+  },
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginHorizontal: 20,
+    borderRadius: 30,
+    backgroundColor: '#333333',
+  },
+  userInfo: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  userLevel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  userName: {
+    fontSize: 20,
+  },
+  settingsButton: {
+    borderRadius: 50,
+    overflow: 'hidden',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    marginTop: 70, // Adjust as needed
+  },
+  modalOverlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    elevation: 5,
+    minWidth: 200, // Adjust as needed
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    fontSize: 18,
+  },
+  logoutButton: {
+    marginVertical: 5,
+    borderRadius: 10,
+  },
+  cancelButton: {
+    marginVertical: 5,
+    borderRadius: 10,
+  },
+});
+
+export default HeaderLabel;
